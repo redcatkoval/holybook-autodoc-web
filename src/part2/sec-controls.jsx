@@ -299,48 +299,156 @@ window.PatAccordion = PatAccordion;
 // ════════════════════════════════════════════════════════════════════════
 // PATTERN · Quantity stepper
 // ════════════════════════════════════════════════════════════════════════
+// A product line — thumbnail + title/price placeholders + a stepper, with
+// optional overflow ⋮ (checkout delete affordance).
+function StepperRow({ qty = 1, trash = false, minusDisabled = false, plusDisabled = false, overflow = false, top = true }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderTop: top ? "1px solid #ececec" : "none", fontFamily: "-apple-system, sans-serif" }}>
+      <div style={{ width: 46, height: 46, borderRadius: 8, background: "#ececec", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#b8b8b8", fontSize: 18 }}>▱</div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+        <Skel w="72%" h={8} /><Skel w="32%" h={9} />
+      </div>
+      <QtyStepper n={qty} trash={trash} minusDisabled={minusDisabled} plusDisabled={plusDisabled} />
+      {overflow && <span style={{ fontSize: 16, color: "#9a9a9a", padding: "0 2px", letterSpacing: "0.5px" }}>⋮</span>}
+    </div>
+  );
+}
+
 function PatStepper() {
   return (
     <Section id="p-stepper">
       <PatternHead category="Not ready" title="Quantity stepper"
-        lede="A small, constant control for editing a numeric quantity: − N +. It appears wherever a line quantity is adjustable, reads the same everywhere, and edits in place without a modal or a page change. It's the web twin of the app's stepper, down to the touch target sizing." />
+        lede="One small control — minus · number · plus — with three behaviours at the lower boundary, picked by where it sits. The shape stays the same everywhere; on the product page Add to cart swaps into it on first add, the cart row deletes through a trash variant at quantity 1, and the checkout row only disables the minus — there deletion is a separate, confirmed action. Mobile-web mirrors the app; desktop keeps the same control in its surfaces." />
 
       <Callout label="Autodoc reading">
-        The app's quantity stepper is a three-part control with comfortable touch targets; the web keeps the shape and the sizing. It edits a value directly — no dropdown, no keypad, no modal. Hitting the lower bound disables the minus; the control never lets a quantity fall below its floor.</Callout>
+        The app reuses one stepper across PLP, PDP, Cart and Checkout, changing only what happens at quantity 1. The web keeps that. The shape is a bordered minus · number · plus; the number is editable directly (type on desktop, a numeric keyboard on mobile). The first add raises a single «Item added to cart» toast — later plus / minus taps update silently and the cart badge tracks the total. Cart removal stays reversible (an Undo toast, no confirm dialog); checkout removal is deliberately gated, because the cost of a wrong delete there is the whole session.</Callout>
 
-      <H3>− N + , edited in place</H3>
-      <p>The stepper sits inline next to the quantity it controls. Tapping adjusts the value immediately; the minus disables at the minimum. Same control on both breakpoints.</p>
+      <H3>One control, four boundaries</H3>
+      <p>The same minus · number · plus appears everywhere; only the quantity-1 boundary changes — default, disabled at the floor, a trash on the cart row, and a disabled plus at the stock limit.</p>
       <FrameRow>
-        <FrameCell caption="<b>Inline stepper.</b> A − N + control wherever a quantity is editable.">
-          <Browser url="autodoc.ex/line" h={240}>
+        <FrameCell caption="<b>The control and its boundaries.</b> Default · floor (minus disabled) · cart (minus → trash at 1) · stock limit (plus disabled).">
+          <div style={{ padding: 6, display: "flex", gap: 22, alignItems: "center", flexWrap: "nowrap" }}>
+            {[
+              { label: "Default", p: { n: 2 } },
+              { label: "At floor", p: { n: 1 } },
+              { label: "Cart · qty 1", p: { n: 1, trash: true } },
+              { label: "Stock limit", p: { n: 5, plusDisabled: true } },
+            ].map(({ label, p }) => (
+              <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <QtyStepper {...p} />
+                <span style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 9, color: "#6b6b6b" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </FrameCell>
+      </FrameRow>
+
+      <H3>Product page — Add to cart becomes the stepper</H3>
+      <p>The product page carries a single primary, <b>Add to cart</b>. The first click commits one unit and the button itself swaps into a full-width stepper in the same slot, with a one-time «Item added to cart» toast. On desktop it lives in the buy-box; on mobile-web in the sticky bottom bar.</p>
+      <FrameRow>
+        <FrameCell caption="<b>Desktop.</b> The buy-box Add to cart has swapped into a full-width stepper at qty 1; the first-add toast acknowledges once.">
+          <Browser url="autodoc.ex/product/ref-11009">
             <HeaderSpine />
-            <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontFamily: "-apple-system, sans-serif", fontSize: 11, color: "#6b6b6b" }}>Quantity</span>
-              <QtyStepper n={2} />
+            <div style={{ padding: 18, display: "flex", gap: 24, fontFamily: "-apple-system, sans-serif" }}>
+              <div style={{ width: 240, flexShrink: 0 }}><div style={{ width: 240, height: 240, borderRadius: 10, background: "#ececec", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8b8b8", fontSize: 40 }}>▱</div></div>
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 9 }}>
+                <Skel w="62%" h={14} /><Skel w="40%" h={10} />
+                <div style={{ height: 8 }} />
+                <span style={{ fontSize: 21, fontWeight: 800, color: "#111" }}>18.99&nbsp;€</span>
+                <div style={{ height: 4 }} />
+                <QtyStepper n={1} block />
+              </div>
+            </div>
+            <div style={{ position: "absolute", left: 0, right: 0, bottom: 18, display: "flex", justifyContent: "center" }}>
+              <Toast tone="dark">Item added to cart</Toast>
             </div>
           </Browser>
         </FrameCell>
-        <FrameCell caption="<b>Mobile-web.</b> The same stepper, comfortable touch targets.">
-          <MobileWeb url="autodoc.ex/line" navActive="Catalog">
-            <div style={{ padding: 14, display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontFamily: "-apple-system, sans-serif", fontSize: 12, color: "#6b6b6b" }}>Quantity</span>
-              <QtyStepper n={1} />
+        <FrameCell caption="<b>Mobile-web.</b> The sticky bottom Add to cart has swapped into a full-width stepper; same one-time toast.">
+          <MobileWeb url="autodoc.ex/product/ref-11009" navActive="Catalog">
+            <div style={{ padding: 12, fontFamily: "-apple-system, sans-serif" }}>
+              <div style={{ aspectRatio: "1", borderRadius: 10, background: "#ececec", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8b8b8", fontSize: 40 }}>▱</div>
+              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}><Skel w="78%" h={11} /><Skel w="48%" h={8} /></div>
+            </div>
+            <div style={{ position: "absolute", left: 10, right: 10, bottom: 74, display: "flex", justifyContent: "center", zIndex: 10 }}>
+              <Toast tone="dark">Item added to cart</Toast>
+            </div>
+            <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 12px", background: "#fff", borderTop: "1px solid #ececec" }}>
+              <QtyStepper n={1} block />
+            </div>
+          </MobileWeb>
+        </FrameCell>
+      </FrameRow>
+
+      <H3>Cart — inline stepper, quantity 1 removes</H3>
+      <p>The cart is where editing happens: a stepper on each row. At quantity 1 the minus becomes a trash; tapping it removes the row <b>optimistically</b> with an Undo toast — reversible, so no confirm dialog. At the stock limit the plus is disabled and a toast explains why.</p>
+      <FrameRow>
+        <FrameCell caption="<b>Desktop — cart slide-over.</b> Row 1 at qty 2, row 2 at qty 1 (trash), row 3 at the stock limit (plus disabled). Removing a row floats an Undo toast.">
+          <Browser url="autodoc.ex/cart">
+            <HeaderSpine />
+            <div style={{ position: "absolute", inset: 0, background: "rgba(20,20,20,0.4)" }} />
+            <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 300, background: "#fff", padding: "16px 18px", fontFamily: "-apple-system, sans-serif", boxShadow: "-12px 0 32px rgba(0,0,0,0.18)" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#111", marginBottom: 4 }}>Cart</div>
+              <StepperRow qty={2} top={false} />
+              <StepperRow qty={1} trash />
+              <StepperRow qty={5} plusDisabled />
+            </div>
+            <div style={{ position: "absolute", left: 18, bottom: 18, display: "flex" }}>
+              <Toast tone="dark" action="Undo">Item removed</Toast>
+            </div>
+          </Browser>
+        </FrameCell>
+        <FrameCell caption="<b>Mobile-web — cart page.</b> The same rows; tapping the disabled plus surfaces «Only 5 left in stock».">
+          <MobileWeb url="autodoc.ex/cart" navActive="Cart">
+            <div style={{ padding: 12, fontFamily: "-apple-system, sans-serif" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#111", marginBottom: 4 }}>Cart</div>
+              <StepperRow qty={2} top={false} />
+              <StepperRow qty={1} trash />
+              <StepperRow qty={5} plusDisabled />
+            </div>
+            <div style={{ position: "absolute", left: 10, right: 10, bottom: 74, display: "flex", justifyContent: "center", zIndex: 10 }}>
+              <Toast tone="dark">Only 5 left in stock</Toast>
+            </div>
+          </MobileWeb>
+        </FrameCell>
+      </FrameRow>
+
+      <H3>Checkout — the delete is protected</H3>
+      <p>In checkout the cost of a wrong delete is the whole session — address, delivery, payment. So at quantity 1 the minus is just <b>disabled</b>, never a trash; deletion is a separate, confirmed action through the row's overflow ⋮.</p>
+      <FrameRow>
+        <FrameCell caption="<b>Desktop — checkout line items.</b> Steppers on each row; at qty 1 the minus is disabled, and the overflow ⋮ carries the (confirmed) delete.">
+          <Browser url="autodoc.ex/checkout" h={300}>
+            <HeaderSpine />
+            <div style={{ padding: "16px 18px", fontFamily: "-apple-system, sans-serif", maxWidth: 460 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: "#111", marginBottom: 4 }}>Your items</div>
+              <StepperRow qty={2} overflow top={false} />
+              <StepperRow qty={1} minusDisabled overflow />
+            </div>
+          </Browser>
+        </FrameCell>
+        <FrameCell caption="<b>Mobile-web — checkout.</b> Same protection: minus disabled at 1, delete only through the row's ⋮.">
+          <MobileWeb url="autodoc.ex/checkout" header={false} nav={false}>
+            <div style={{ height: "100%", background: "#fff" }}>
+              <CommitHead titleW={80} />
+              <div style={{ padding: 12, fontFamily: "-apple-system, sans-serif" }}>
+                <StepperRow qty={2} overflow top={false} />
+                <StepperRow qty={1} minusDisabled overflow />
+              </div>
             </div>
           </MobileWeb>
         </FrameCell>
       </FrameRow>
 
       <Rules items={[
-        "<b>Edit in place.</b> No modal, no keypad, no page change to change a number.",
-        "<b>Respect the floor.</b> Disable the minus at the minimum; never allow an invalid quantity.",
-        "<b>Comfortable targets,</b> sized for touch on both breakpoints.",
-        "<b>Reflect changes immediately,</b> updating any dependent total optimistically.",
+        "<b>One control, four surfaces.</b> The same minus · number · plus on the catalogue, product page, cart and checkout — only the quantity-1 boundary changes.",
+        "<b>Add to cart becomes the stepper.</b> The first add commits one unit and the primary button swaps into a full-width stepper in the same slot.",
+        "<b>First-add toast only.</b> «Item added to cart» appears once, on the swap; later plus / minus taps update silently and the cart badge tracks the total.",
+        "<b>Cart removal is optimistic + Undo.</b> At quantity 1 the minus becomes a trash; tapping removes the row at once with an Undo toast — reversible, so no confirm dialog.",
+        "<b>Checkout removal is gated.</b> The minus disables at 1; deletion is a separate, confirmed action through the row's overflow ⋮ — the path is deliberately longer than in the cart.",
+        "<b>Stock limit: plus disabled, a toast explains.</b> Tapping the disabled plus surfaces «Only N left in stock»; no inline hint on the row.",
+        "<b>The number is editable.</b> Type directly on desktop, a numeric keyboard on mobile; empty reverts to 1, input above stock clamps to the maximum.",
+        "<b>Reflect changes immediately,</b> updating dependent totals optimistically.",
       ]}/>
-
-      <DoDont
-        doItem="Use the − N + stepper inline wherever a quantity is editable, updating dependent totals at once and disabling minus at the floor."
-        dontItem="Don't open a modal to change a quantity, and don't let the control produce zero or negative values where they're invalid."
-      />
 
     </Section>
   );

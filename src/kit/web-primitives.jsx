@@ -1054,14 +1054,27 @@ function Toast({ children, action, tone = "dark", close = false, timer = null })
 }
 
 // Quantity stepper — − N + in a bordered pill.
-function QtyStepper({ n = 1, dark = false }) {
-  const bd = dark ? "rgba(255,255,255,0.3)" : PAL.line;
+// Quantity stepper — one control, four boundary behaviours at qty=1.
+// `trash` swaps the minus for a trash icon (cart); `minusDisabled` greys it
+// (checkout / floor); `plusDisabled` greys the plus (stock limit); `block`
+// makes it a full-width control (the PDP add-to-cart slot).
+function QtyStepper({ n = 1, dark = false, trash = false, minusDisabled = false, plusDisabled = false, block = false }) {
+  const frame = dark ? "rgba(255,255,255,0.4)" : PAL.ink;
+  const div = dark ? "rgba(255,255,255,0.4)" : PAL.line;
   const col = dark ? "#fff" : PAL.ink;
+  const showTrash = trash && n <= 1;
+  const minusOff = minusDisabled || (!trash && n <= 1);
+  const pad = block ? "0 18px" : "5px 11px";
+  const side = { padding: pad, fontSize: 15, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", alignSelf: "stretch", cursor: "pointer" };
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", border: `1px solid ${bd}`, borderRadius: 7, overflow: "hidden", fontFamily: UI, color: col }}>
-      <span style={{ padding: "2px 8px", fontSize: 12, opacity: n <= 1 ? 0.4 : 1 }}>−</span>
-      <span style={{ padding: "2px 10px", fontSize: 10, borderLeft: `1px solid ${bd}`, borderRight: `1px solid ${bd}` }}>{n}</span>
-      <span style={{ padding: "2px 8px", fontSize: 12 }}>+</span>
+    <span style={{ display: block ? "flex" : "inline-flex", alignItems: "center", justifyContent: block ? "space-between" : "flex-start", border: `1.5px solid ${frame}`, borderRadius: 9, overflow: "hidden", fontFamily: UI, color: col, width: block ? "100%" : "auto", height: block ? 44 : "auto", boxSizing: "border-box" }}>
+      <span style={{ ...side, opacity: minusOff ? 0.32 : 1 }}>
+        {showTrash
+          ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13" stroke={col} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          : "−"}
+      </span>
+      <span style={{ flex: block ? 1 : "none", padding: block ? 0 : "5px 16px", fontSize: block ? 14 : 12, fontWeight: 700, borderLeft: `1.5px solid ${div}`, borderRight: `1.5px solid ${div}`, alignSelf: "stretch", display: "flex", alignItems: "center", justifyContent: "center" }}>{n}</span>
+      <span style={{ ...side, opacity: plusDisabled ? 0.32 : 1 }}>+</span>
     </span>
   );
 }
