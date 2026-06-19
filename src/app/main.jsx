@@ -88,14 +88,14 @@ function App() {
 
         <GroupLabel>Product</GroupLabel>
         <PatProductCard />
+        <hr className="rule"/>
+        <PatGallery />
 
         <PartDivider num="Not ready" title="Open questions"
           lede="Patterns and flows whose web form isn't settled yet — documented as questions, not decisions, so the gaps are visible." />
         <PatStepper />
         <hr className="rule"/>
         <PatReviews />
-        <hr className="rule"/>
-        <PatGallery />
         <hr className="rule"/>
         <FlowAuth />
         <hr className="rule"/>

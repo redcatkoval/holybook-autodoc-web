@@ -39,13 +39,13 @@ function TOC() {
     ]],
     ["Product", [
       ["", "Product card", "p-card"],
+      ["", "Image gallery", "p-gallery"],
     ]],
   ];
 
   const notReady = [
     ["", "Quantity stepper", "p-stepper"],
     ["", "Reviews & ratings", "p-reviews"],
-    ["", "Image gallery", "p-gallery"],
     ["", "Sign in & register", "f-auth"],
     ["", "Add a car", "f-addcar"],
     ["", "Help me choose", "f-help"],

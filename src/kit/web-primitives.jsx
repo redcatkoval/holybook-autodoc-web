@@ -1458,8 +1458,217 @@ function FilterSheet() {
   );
 }
 
+// ── Image gallery ────────────────────────────────────────────────────────────
+// One gallery carries every media kind — photo, video, 360°, fitment diagram —
+// behind one viewer. Active marker is ink (black), never colour.
+function GalThumb({ kind = "photo", selected = false, dark = false, size = 46 }) {
+  const border = selected ? (dark ? "#fff" : PAL.ink) : "transparent";
+  return (
+    <div style={{ width: size, height: size, flexShrink: 0, borderRadius: 6, background: dark ? "#333" : "#ececec", border: `1.5px solid ${border}`, position: "relative", display: "flex", alignItems: "center", justifyContent: "center", color: dark ? "rgba(255,255,255,0.45)" : "#b8b8b8", fontSize: 16 }}>
+      {kind === "360"
+        ? <span style={{ fontSize: 11, fontWeight: 800, fontStyle: "italic", color: dark ? "#fff" : "#2b6fd8" }}>360°</span>
+        : <span>▱</span>}
+      {(kind === "video" || kind === "fitment") && (
+        <span style={{ position: "absolute", bottom: 3, right: 3, minWidth: 13, height: 13, padding: "0 3px", borderRadius: 3, background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 8, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{kind === "video" ? "▶" : "⌗"}</span>
+      )}
+    </div>
+  );
+}
+function GalThumbRail({ items = ["360", "photo", "photo", "photo"], selected = 1, dark = false, size = 46, center = false }) {
+  return (
+    <div style={{ display: "flex", gap: 8, justifyContent: center ? "center" : "flex-start", flexWrap: "nowrap", overflow: "hidden" }}>
+      {items.map((k, i) => <GalThumb key={i} kind={k} selected={i === selected} dark={dark} size={size} />)}
+    </div>
+  );
+}
+function GalDots({ count = 4, active = 0 }) {
+  return (
+    <div style={{ display: "flex", gap: 5, justifyContent: "center" }}>
+      {Array.from({ length: count }).map((_, i) => <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === active ? PAL.ink : PAL.line }} />)}
+    </div>
+  );
+}
+// Main media block — schematic image with an optional media-type badge and,
+// on desktop, a click-to-open (expand) affordance.
+function GalMain({ kind = "photo", h = 230, square = false, dark = false }) {
+  return (
+    <div style={{ position: "relative", borderRadius: 10, background: dark ? "#333" : "#ececec", display: "flex", alignItems: "center", justifyContent: "center", color: dark ? "rgba(255,255,255,0.4)" : "#b8b8b8", fontSize: 46, cursor: "pointer", ...(square ? { aspectRatio: "1", width: "100%" } : { height: h }) }}>
+      <span>▱</span>
+      {kind !== "photo" && (
+        <span style={{ position: "absolute", bottom: 10, left: 10, padding: "4px 9px", borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 10, fontWeight: 700 }}>{kind === "360" ? "360°" : kind === "video" ? "Video" : "Fitment"}</span>
+      )}
+    </div>
+  );
+}
+function GalArrow({ side, dark = false }) {
+  return <span style={{ position: "absolute", top: "50%", [side]: 8, transform: "translateY(-50%)", width: 30, height: 30, borderRadius: "50%", background: dark ? "rgba(255,255,255,0.18)" : PAL.ink, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, lineHeight: 1 }}>{side === "left" ? "‹" : "›"}</span>;
+}
+// Desktop PDP — main media + bottom thumb rail, beside a slim buy-box.
+function GalleryDesktop() {
+  return (
+    <div style={{ padding: 18, display: "flex", gap: 24, fontFamily: UI }}>
+      <div style={{ width: 300, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+        <GalMain kind="photo" square />
+        <GalThumbRail selected={1} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        <Skel w="60%" h={14} bg="#bdbdbd" />
+        <Skel w="38%" h={10} />
+      </div>
+    </div>
+  );
+}
+// Desktop lightbox — a modal over a dimmed page: title, item no., big image
+// with prev/next, image count, and the thumb rail. Pass as a Browser child.
+function GalleryLightbox() {
+  return (
+    <div style={{ position: "absolute", inset: 0, zIndex: 30, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(20,20,20,0.5)", fontFamily: UI }}>
+      <div style={{ width: "80%", maxWidth: 540, background: "#fff", borderRadius: 12, padding: "18px 22px 22px", position: "relative", boxShadow: "0 24px 70px rgba(0,0,0,0.32)" }}>
+        <span style={{ position: "absolute", top: 14, right: 16, fontSize: 18, lineHeight: 1, color: PAL.ink }}>✕</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+          <Skel w={200} h={13} bg="#bdbdbd" />
+          <Skel w={120} h={9} />
+        </div>
+        <div style={{ position: "relative", marginTop: 16 }}>
+          <GalMain kind="photo" h={220} />
+          <GalArrow side="left" />
+          <GalArrow side="right" />
+        </div>
+        <div style={{ marginTop: 14 }}>
+          <GalThumbRail items={["photo", "photo", "photo"]} selected={2} />
+        </div>
+      </div>
+    </div>
+  );
+}
+// Mobile PDP — main media + dots (thumbs live in the viewer, as in the app).
+function GalleryMobile() {
+  return (
+    <div style={{ padding: 12, fontFamily: UI, display: "flex", flexDirection: "column", gap: 10 }}>
+      <GalMain kind="photo" square />
+      <GalDots count={4} active={0} />
+      <div style={{ height: 2 }} />
+      <Skel w="80%" h={12} bg="#bdbdbd" />
+      <Skel w="50%" h={8} />
+    </div>
+  );
+}
+// Mobile full-screen viewer — the app's dark corridor: ✕, counter, big media,
+// dark thumb strip. Commits nothing. Pass to MobileWeb's `overlay`.
+function GalleryViewer() {
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "#111", display: "flex", flexDirection: "column", fontFamily: UI }}>
+      <div style={{ padding: "32px 16px 12px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+          <Skel w={130} h={9} bg="rgba(255,255,255,0.5)" />
+          <Skel w={80} h={7} bg="rgba(255,255,255,0.25)" />
+        </div>
+        <span style={{ color: "#fff", fontSize: 18, lineHeight: 1 }}>✕</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px", position: "relative" }}>
+        <GalArrow side="left" dark />
+        <div style={{ width: "100%", maxWidth: 260, aspectRatio: "1", background: "#333", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)", fontSize: 48 }}>▱</div>
+        <GalArrow side="right" dark />
+      </div>
+      <div style={{ padding: "10px 16px 22px" }}>
+        <GalThumbRail items={["photo", "photo", "360", "photo"]} selected={2} dark size={40} center />
+      </div>
+    </div>
+  );
+}
+
+// One component, every media kind — photo, video, 360°, fitment.
+function GalMediaSpecimens() {
+  const kinds = [
+    { k: "photo", label: "Photo" },
+    { k: "video", label: "Video" },
+    { k: "360", label: "360° view" },
+    { k: "fitment", label: "Fitment" },
+  ];
+  return (
+    <div style={{ display: "flex", gap: 14, flexWrap: "nowrap", fontFamily: UI }}>
+      {kinds.map(({ k, label }) => (
+        <div key={k} style={{ width: 150, flexShrink: 0 }}>
+          <div style={{ position: "relative", height: 110, borderRadius: 10, background: "#ececec", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8b8b8", fontSize: 30 }}>
+            <span>▱</span>
+            {k === "video" && <span style={{ position: "absolute", width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: PAL.ink, paddingLeft: 3 }}>▶</span>}
+            {k === "360" && <span style={{ position: "absolute", bottom: 8, left: 8, padding: "3px 8px", borderRadius: 12, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, fontWeight: 700 }}>360°</span>}
+            {k === "fitment" && <span style={{ position: "absolute", bottom: 8, left: 8, padding: "3px 8px", borderRadius: 12, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, fontWeight: 700 }}>Fitment</span>}
+          </div>
+          <div style={{ fontSize: 10, color: PAL.muted, marginTop: 6, textAlign: "center", fontFamily: MONO }}>{label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+// Loading — square skeleton media + thumb rail beside title/subtitle (desktop)
+// / square media + dots (mobile). No price or buttons while it streams.
+function GalleryLoading({ mobile = false }) {
+  const shimmer = <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)", animation: "galShimmer 1.4s linear infinite" }} />;
+  const kf = <style>{`@keyframes galShimmer { from { transform: translateX(-100%) } to { transform: translateX(100%) } }`}</style>;
+  if (mobile) {
+    return (
+      <div style={{ padding: 12, fontFamily: UI }}>
+        <div style={{ aspectRatio: "1", borderRadius: 10, background: "#f1f0ed", position: "relative", overflow: "hidden" }}>{shimmer}</div>
+        <div style={{ marginTop: 12 }}><GalDots count={4} active={0} /></div>
+        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+          <Skel w="70%" h={9} bg="#cfcfcf" /><Skel w="45%" h={7} />
+        </div>
+        {kf}
+      </div>
+    );
+  }
+  return (
+    <div style={{ padding: 18, display: "flex", gap: 24, fontFamily: UI }}>
+      <div style={{ width: 300, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ width: 300, height: 300, borderRadius: 10, background: "#f1f0ed", position: "relative", overflow: "hidden" }}>{shimmer}</div>
+        <div style={{ display: "flex", gap: 8 }}>{[0, 1, 2, 3].map((i) => <div key={i} style={{ width: 46, height: 46, borderRadius: 6, background: "#f1f0ed" }} />)}</div>
+      </div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        <Skel w="60%" h={13} bg="#cfcfcf" /><Skel w="38%" h={9} />
+      </div>
+      {kf}
+    </div>
+  );
+}
+// Error — a broken-media tile (square on desktop) beside title/subtitle. No
+// Retry on the image — the failure is surfaced by a toast; the page keeps rendering.
+function GalleryError({ mobile = false }) {
+  if (mobile) {
+    return (
+      <div style={{ padding: 12, fontFamily: UI }}>
+        <div style={{ aspectRatio: "1", borderRadius: 10, background: PAL.paper, border: `1px solid ${PAL.line2}`, display: "flex", alignItems: "center", justifyContent: "center", color: PAL.muted2, fontSize: 34 }}>▱</div>
+        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+          <Skel w="70%" h={9} bg="#cfcfcf" /><Skel w="45%" h={7} />
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div style={{ padding: 18, display: "flex", gap: 24, fontFamily: UI }}>
+      <div style={{ width: 300, height: 300, flexShrink: 0, borderRadius: 10, background: PAL.paper, border: `1px solid ${PAL.line2}`, display: "flex", alignItems: "center", justifyContent: "center", color: PAL.muted2, fontSize: 34 }}>▱</div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        <Skel w="60%" h={13} bg="#cfcfcf" /><Skel w="38%" h={9} /><Skel w="48%" h={7} />
+      </div>
+    </div>
+  );
+}
+// Collapsed — outside the product page the gallery is one thumbnail, no carousel.
+function GalCollapsed() {
+  return (
+    <div style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 14px", border: `1px solid ${PAL.line2}`, borderRadius: 10, background: "#fff", fontFamily: UI, width: 340 }}>
+      <div style={{ width: 54, height: 54, borderRadius: 8, background: "#ececec", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#b8b8b8", fontSize: 20 }}>▱</div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+        <Skel w="75%" h={8} bg="#bdbdbd" /><Skel w="50%" h={6} /><Skel w="30%" h={9} bg="#bdbdbd" />
+      </div>
+    </div>
+  );
+}
+
 Object.assign(window, {
   MiniCard, FiltersDesktop, FiltersMobileBar, FilterSheet,
+  GalleryDesktop, GalleryLightbox, GalleryMobile, GalleryViewer,
+  GalMediaSpecimens, GalleryLoading, GalleryError, GalCollapsed,
   Skel, Thumb, Region, Pill, Btn, Browser, MobileWeb, MobileAddressBar, HeaderSpine, MobileHeader,
   CollectionsStrip, SidebarFilters, ProductCard, ProductGrid, SchematicCard,
   SchematicGrid, ResultBar, BottomNav, MobileDrawer, Modal, SideDrawer, GarageOverlay, CarCarousel,
