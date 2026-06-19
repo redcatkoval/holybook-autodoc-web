@@ -24,6 +24,7 @@ function TOC() {
     ["Controls", [
       ["", "Action hierarchy", "p-buttons"],
       ["", "Dropdowns", "p-dropdown"],
+      ["", "Filters", "p-filters"],
       ["", "Accordion", "p-accordion"],
       ["", "Step indicators", "p-steps"],
     ]],
@@ -36,15 +37,15 @@ function TOC() {
       ["", "Errors", "p-errors"],
       ["", "Optimistic & undo", "p-undo"],
     ]],
+    ["Product", [
+      ["", "Product card", "p-card"],
+    ]],
   ];
 
   const notReady = [
-    ["", "Filters", "p-filters"],
     ["", "Quantity stepper", "p-stepper"],
     ["", "Reviews & ratings", "p-reviews"],
     ["", "Image gallery", "p-gallery"],
-    ["", "Widgets", "p-promo"],
-    ["", "Product card", "nr-card"],
     ["", "Sign in & register", "f-auth"],
     ["", "Add a car", "f-addcar"],
     ["", "Help me choose", "f-help"],

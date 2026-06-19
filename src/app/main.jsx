@@ -68,6 +68,8 @@ function App() {
         <hr className="rule"/>
         <PatDropdown />
         <hr className="rule"/>
+        <PatFilters />
+        <hr className="rule"/>
         <PatAccordion />
         <hr className="rule"/>
         <PatSteps />
@@ -84,19 +86,16 @@ function App() {
         <hr className="rule"/>
         <PatUndo />
 
+        <GroupLabel>Product</GroupLabel>
+        <PatProductCard />
+
         <PartDivider num="Not ready" title="Open questions"
           lede="Patterns and flows whose web form isn't settled yet — documented as questions, not decisions, so the gaps are visible." />
-        <PatFilters />
-        <hr className="rule"/>
         <PatStepper />
         <hr className="rule"/>
         <PatReviews />
         <hr className="rule"/>
         <PatGallery />
-        <hr className="rule"/>
-        <PatWidgets />
-        <hr className="rule"/>
-        <PatProductCard />
         <hr className="rule"/>
         <FlowAuth />
         <hr className="rule"/>

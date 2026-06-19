@@ -1,7 +1,6 @@
-// Part II · Product — two separate patterns, mirroring the app book's
-// "Product" group: Reviews & ratings, Image gallery. (The product card moves
-// to the "Not ready" part; promo widgets to "Promotion"; "Help me choose" is
-// a Part III flow.)
+// Reviews & ratings and Image gallery — both currently in the "Not ready"
+// part. (The Product card is a finished Part II pattern in sec-notready.jsx;
+// the flows live in src/part3/.)
 
 function Gallery() {
   return (

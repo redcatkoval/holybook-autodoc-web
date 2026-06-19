@@ -1181,7 +1181,285 @@ function CatalogTabsContent({ footer = false, collections = ["Road trip ready", 
   );
 }
 
+// ── Mini product card (listing atom) ──────────────────────────────────────
+// Three blocks: product (image · badges · wishlist/compare), description (name ·
+// specs · rating), sale (price · delivery · the orange buy button). Two
+// layouts: vertical (grid) and horizontal (list). All schematic placeholders.
+function MiniBadges() {
+  return (
+    <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 5 }}>
+      <Pill tone="dark">Best Budget</Pill>
+      <Pill tone="good">Free shipping</Pill>
+    </span>
+  );
+}
+function MiniActions({ row = false }) {
+  return (
+    <span style={{ display: "flex", flexDirection: row ? "row" : "column", gap: row ? 10 : 9 }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9.2-8.3C1 8.4 3.4 5 7 6.2 9.2 7 12 9.6 12 9.6s2.8-2.6 5-3.4c3.6-1.2 6 2.2 4.2 5.5C19 15.6 12 20 12 20z" stroke="#9a9a9a" strokeWidth="1.6" strokeLinejoin="round"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M6 7h12M6 7l-2.5 5.5h5L6 7zM18 7l-2.5 5.5h5L18 7z" stroke="#9a9a9a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+    </span>
+  );
+}
+function MiniDesc() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <span style={{ fontSize: 12.5, fontWeight: 700, color: PAL.ink, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>RIDEX PLUS Active Defense</span>
+      <span style={{ fontSize: 10, color: PAL.muted }}>10W-40 · 1L · Longlife-98 MB</span>
+      <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <Stars n={5} of={1} size={12} />
+        <span style={{ fontSize: 10.5, fontWeight: 700, color: PAL.ink }}>4.8</span>
+        <span style={{ fontSize: 9.5, color: PAL.muted2 }}>(127 reviews)</span>
+      </span>
+    </div>
+  );
+}
+function MiniSale({ withActions = false, oos = false }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+      {withActions && !oos && <div style={{ display: "flex", justifyContent: "flex-end" }}><MiniActions row /></div>}
+      <span style={{ display: "flex", alignItems: "baseline", gap: 5, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 17, fontWeight: 800, color: PAL.ink, whiteSpace: "nowrap" }}>18.99&nbsp;€</span>
+        <span style={{ fontSize: 9.5, color: PAL.muted2, whiteSpace: "nowrap" }}>/ per piece</span>
+      </span>
+      {oos
+        ? <span style={{ fontSize: 10.5, fontWeight: 700, color: PAL.muted }}>Out of stock</span>
+        : <span style={{ fontSize: 9.5, color: PAL.muted }}>Delivery <b style={{ color: PAL.ink2, whiteSpace: "nowrap" }}>Mon, 19 May</b></span>}
+      {oos
+        ? <Btn tone="secondary" block>Notify me</Btn>
+        : (
+          <Btn tone="accent" block>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.3a1 1 0 001 .7h8.7a1 1 0 001-.8L21 8H6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="20" r="1.3" fill="#fff"/><circle cx="18" cy="20" r="1.3" fill="#fff"/></svg>
+              Add to cart
+            </span>
+          </Btn>
+        )}
+    </div>
+  );
+}
+// `oos` (out of stock) drops the badges, the wishlist/compare actions and the
+// delivery line, turns the buy button into a secondary «Notify me», and shows
+// «Out of stock» where the delivery line was.
+function MiniCard({ layout = "vertical", w = "100%", wide = false, oos = false }) {
+  if (layout === "horizontal" && wide) {
+    // Desktop: three columns — product · description · sale.
+    return (
+      <div style={{ border: `1px solid ${PAL.line2}`, borderRadius: 12, background: PAL.card, padding: 14, display: "flex", gap: 16, alignItems: "stretch", fontFamily: UI }}>
+        <div style={{ width: 132, flexShrink: 0, position: "relative" }}>
+          <Thumb h={122} r={8} />
+          {!oos && <div style={{ position: "absolute", top: 6, left: 6 }}><MiniBadges /></div>}
+        </div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}><MiniDesc /></div>
+        <div style={{ width: 200, flexShrink: 0, display: "flex", flexDirection: "column" }}><MiniSale withActions oos={oos} /></div>
+      </div>
+    );
+  }
+  if (layout === "horizontal") {
+    // Narrow (mobile-web): image left, description + sale stacked on the right.
+    return (
+      <div style={{ border: `1px solid ${PAL.line2}`, borderRadius: 12, background: PAL.card, padding: 11, display: "flex", gap: 11, fontFamily: UI }}>
+        <div style={{ position: "relative", width: 96, flexShrink: 0 }}>
+          <Thumb h={110} r={8} />
+          {!oos && <div style={{ position: "absolute", top: 5, left: 5 }}><MiniBadges /></div>}
+        </div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 9 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+            <div style={{ flex: 1, minWidth: 0 }}><MiniDesc /></div>
+            {!oos && <MiniActions />}
+          </div>
+          <MiniSale oos={oos} />
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div style={{ width: w, border: `1px solid ${PAL.line2}`, borderRadius: 12, background: PAL.card, overflow: "hidden", display: "flex", flexDirection: "column", fontFamily: UI, flexShrink: 0, boxSizing: "border-box" }}>
+      <div style={{ position: "relative" }}>
+        <Thumb h={128} r={0} />
+        {!oos && <div style={{ position: "absolute", top: 8, left: 8 }}><MiniBadges /></div>}
+        {!oos && <div style={{ position: "absolute", top: 8, right: 8 }}><MiniActions /></div>}
+      </div>
+      <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+        <MiniDesc />
+        <MiniSale oos={oos} />
+      </div>
+    </div>
+  );
+}
+
+// ── Filters ────────────────────────────────────────────────────────────────
+// Filter value option — white card; ink outline when selected. No text.
+function FilterTile({ selected = false }) {
+  return (
+    <div style={{ borderRadius: 9, background: PAL.card, border: `1.5px solid ${selected ? PAL.ink : PAL.line2}`, padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+      <Skel w="58%" h={7} bg={selected ? "#b0b0b0" : "#d8d8d8"} />
+      <Skel w={16} h={6} bg="#e8e8e8" />
+    </div>
+  );
+}
+// Fitment hint chip — real mono text, informational not enforced.
+function FitChip() {
+  return <span style={{ display: "inline-flex", alignSelf: "flex-start", fontFamily: MONO, fontSize: 10, color: PAL.muted, border: `1px solid ${PAL.line}`, borderRadius: 20, padding: "4px 10px", background: PAL.card }}>For your car · 4.2L</span>;
+}
+// «Fits my car» green toggle — a scope, not a filter section.
+function FitToggle() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "9px 12px", borderRadius: 10, background: "rgba(46,125,50,0.07)", border: `1px solid ${PAL.good}`, fontFamily: UI }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: "#1f5d23", lineHeight: 1.3 }}>Only parts that fit my car</span>
+      <span style={{ width: 30, height: 18, borderRadius: 20, background: PAL.good, position: "relative", flexShrink: 0 }}>
+        <span style={{ position: "absolute", top: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#fff" }} />
+      </span>
+    </div>
+  );
+}
+// Desktop sidebar header — «Filters» title with «Clear all» opposite.
+function FiltersSidebarHead() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: UI }}>
+      <span style={{ fontSize: 15, fontWeight: 800, color: PAL.ink }}>Filters</span>
+      <span style={{ fontSize: 11, color: PAL.muted, textDecoration: "underline" }}>Clear all</span>
+    </div>
+  );
+}
+// Selected-filter chips under the desktop header — bordered, removable.
+function SidebarChips() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, fontFamily: UI }}>
+      {[42, 66, 52].map((w, i) => (
+        <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: PAL.card, border: `1px solid ${PAL.line}`, borderRadius: 20, padding: "4px 6px 4px 10px" }}>
+          <Skel w={w} h={6} bg="#cfcfcf" />
+          <span style={{ width: 13, height: 13, borderRadius: "50%", background: PAL.line2, color: PAL.muted, fontSize: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>×</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+// Active-filter chips — dark, removable (×). No text.
+function FilterChips({ n = 4 }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {Array.from({ length: n }).map((_, i) => (
+        <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 8, background: PAL.ink, borderRadius: 20, padding: "6px 6px 6px 12px" }}>
+          <Skel w={[40, 70, 56, 80][i % 4]} h={6} bg="rgba(255,255,255,0.45)" />
+          <span style={{ width: 16, height: 16, borderRadius: "50%", background: "rgba(255,255,255,0.18)", color: "#fff", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>×</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+// Small dropdown selector — desktop sort / view, etc.
+function SelectBox({ label }) {
+  return <span style={{ display: "inline-flex", alignItems: "center", gap: 8, border: `1px solid ${PAL.line}`, borderRadius: 8, padding: "6px 10px", fontFamily: UI, fontSize: 11, color: PAL.ink, background: PAL.card, whiteSpace: "nowrap" }}>{label}<span style={{ fontSize: 8, color: PAL.muted2 }}>▾</span></span>;
+}
+function MobFilterIcon({ children }) {
+  return <span style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${PAL.line}`, background: PAL.card, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{children}</span>;
+}
+// Sidebar filter section (desktop) — title · optional fitment chip · checkbox rows.
+function SidebarSection({ n = 4, fitment = false }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+      <Skel w={96} h={8} bg="#cfcfcf" />
+      {fitment && <FitChip />}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {Array.from({ length: n }).map((_, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <span style={{ width: 14, height: 14, borderRadius: 4, border: `1.5px solid ${i === 0 ? PAL.ink : PAL.line}`, background: i === 0 ? PAL.ink : "transparent", color: "#fff", fontSize: 9, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i === 0 && "✓"}</span>
+            <Skel w={`${52 + (i % 3) * 12}%`} h={7} bg="#d8d8d8" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+// Mobile-sheet filter section — title · optional fitment chip · 2-col tiles.
+function SheetSection({ n = 4, fitment = false, sel = 0 }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+      <Skel w={110} h={8} bg="#cfcfcf" />
+      {fitment && <FitChip />}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {Array.from({ length: n }).map((_, i) => <FilterTile key={i} selected={i === sel} />)}
+      </div>
+    </div>
+  );
+}
+// Desktop filters — sidebar (with the fits-my-car toggle on top) · toolbar
+// (title · results · sort · view) · an empty results area (no product cards).
+function FiltersDesktop() {
+  return (
+    <div style={{ display: "flex", gap: 16, padding: 14, height: 420, boxSizing: "border-box", fontFamily: UI }}>
+      <div style={{ width: 186, flexShrink: 0, borderRight: `1px solid ${PAL.line2}`, paddingRight: 14, display: "flex", flexDirection: "column", gap: 16, overflow: "hidden" }}>
+        <FiltersSidebarHead />
+        <SidebarChips />
+        <FitToggle />
+        <SidebarSection n={4} />
+        <SidebarSection n={3} fitment />
+        <SidebarSection n={3} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 12, borderBottom: `1px solid ${PAL.line2}` }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <span style={{ fontSize: 17, fontWeight: 800, color: PAL.ink }}>Brake discs</span>
+            <span style={{ fontSize: 10, color: PAL.muted }}>2,345 results</span>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <SelectBox label="Sort: Best Price" />
+            <SelectBox label="View: Grid" />
+          </div>
+        </div>
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, paddingTop: 14, alignContent: "start", overflow: "hidden" }}>
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ height: 92, borderRadius: 10, border: `1px dashed ${PAL.line}`, background: PAL.paper }} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+// Mobile catalog bar — title · results · sort icon · filters icon, then the
+// green fits-my-car toggle lifted out under them.
+function FiltersMobileBar() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 12px", fontFamily: UI }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <span style={{ fontSize: 16, fontWeight: 800, color: PAL.ink }}>Brake discs</span>
+          <span style={{ fontSize: 9, color: PAL.muted }}>2,345 results</span>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <MobFilterIcon><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 4v15M7 4L4 7.5M7 4l3 3.5M17 20V5M17 20l-3-3.5M17 20l3-3.5" stroke={PAL.ink} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></MobFilterIcon>
+          <span style={{ position: "relative", display: "inline-flex" }}>
+            <MobFilterIcon><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h8M16 7h4M4 17h4M12 17h8" stroke={PAL.ink} strokeWidth="1.8" strokeLinecap="round"/><circle cx="14" cy="7" r="2.2" stroke={PAL.ink} strokeWidth="1.8"/><circle cx="10" cy="17" r="2.2" stroke={PAL.ink} strokeWidth="1.8"/></svg></MobFilterIcon>
+            <span style={{ position: "absolute", top: -5, right: -5, minWidth: 15, height: 15, padding: "0 3px", boxSizing: "border-box", borderRadius: 8, background: PAL.bad, color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: UI, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff" }}>3</span>
+          </span>
+        </div>
+      </div>
+      <FitToggle />
+    </div>
+  );
+}
+// Mobile full-screen filter sheet — the app-like filter screen (an overlay).
+function FilterSheet() {
+  return (
+    <div style={{ position: "absolute", inset: 0, background: PAL.card, fontFamily: UI, display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "30px 14px 12px", borderBottom: `1px solid ${PAL.line2}`, flexShrink: 0 }}>
+        <span style={{ fontSize: 18, lineHeight: 1, color: PAL.ink }}>‹</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: PAL.ink }}>Filters</span>
+        <span style={{ fontSize: 11, color: PAL.muted }}>Clear all</span>
+      </div>
+      <div style={{ flex: 1, overflow: "hidden", padding: 14, display: "flex", flexDirection: "column", gap: 16 }}>
+        <FilterChips n={4} />
+        <SheetSection n={2} sel={0} />
+        <SheetSection fitment n={4} sel={0} />
+      </div>
+      <div style={{ padding: "10px 14px 20px", borderTop: `1px solid ${PAL.line2}`, flexShrink: 0 }}>
+        <Btn tone="primary" block>Show results (120)</Btn>
+      </div>
+    </div>
+  );
+}
+
 Object.assign(window, {
+  MiniCard, FiltersDesktop, FiltersMobileBar, FilterSheet,
   Skel, Thumb, Region, Pill, Btn, Browser, MobileWeb, MobileAddressBar, HeaderSpine, MobileHeader,
   CollectionsStrip, SidebarFilters, ProductCard, ProductGrid, SchematicCard,
   SchematicGrid, ResultBar, BottomNav, MobileDrawer, Modal, SideDrawer, GarageOverlay, CarCarousel,

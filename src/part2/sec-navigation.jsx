@@ -79,8 +79,8 @@ function FitsChip({ small = false }) {
 // PATTERN · Mega-menu  (web incarnation of the app's tab-bar + catalog nav)
 // ════════════════════════════════════════════════════════════════════════
 // The mega-menu is a DROPDOWN anchored under the black 'Catalog' button in the
-// collections strip — the same popover idiom as the cart dropdown under the
-// basket, not a full-width bar.
+// collections strip — a popover anchored to its trigger, opening over the page,
+// not a full-width bar.
 function MegaMenu() {
   return (
     <div style={{
@@ -166,9 +166,9 @@ function PatMegaMenu() {
       </Callout>
 
       <H3>Desktop — the dropdown</H3>
-      <p>The dropdown opens under the black <b>Catalog</b> button and over the page, the same popover idiom as the cart. Hovering a category lights its tile grid; the grid is already <b>filtered to the active vehicle</b>, so every tile leads to fitting parts. Two promotional rails — DEALS and SHOP BY BRAND — ride the bottom of the same dropdown as lateral routes, not separate pages.</p>
+      <p>The dropdown opens under the black <b>Catalog</b> button and over the page — a popover anchored to its trigger. Hovering a category lights its tile grid; the grid is already <b>filtered to the active vehicle</b>, so every tile leads to fitting parts. Two promotional rails — DEALS and SHOP BY BRAND — ride the bottom of the same dropdown as lateral routes, not separate pages.</p>
       <FrameRow>
-        <FrameCell caption="<b>Desktop.</b> A dropdown anchored under the black 'Catalog' button — category rail · vehicle-scoped tile grid · DEALS · SHOP BY BRAND — opening over the page, the same popover idiom as the cart dropdown.">
+        <FrameCell caption="<b>Desktop.</b> A dropdown anchored under the black 'Catalog' button — category rail · vehicle-scoped tile grid · DEALS · SHOP BY BRAND — opening over the page as a popover anchored to its trigger.">
           <Browser url="autodoc.ex/catalog" h={560}>
             <HeaderSpine />
             <div style={{ position: "relative" }}>
@@ -437,10 +437,10 @@ function PatListFilter() {
   return (
     <Section id="p-listfilter">
       <PatternHead category="Navigation" title="List filtering"
-        lede="Narrowing a large flat list down to one choice — a brand, a category, an address among hundreds. A search field sits above a scrollable list and filters it live, the matched text highlighted. On desktop it is a side panel beside the results; on mobile-web it is a full-screen list, the app's form." />
+        lede="Narrowing a large flat list down to one choice — a brand, a category, an address among hundreds. A search field sits above a scrollable list and filters it live, the matched text highlighted. On desktop it is a side panel beside the results; on mobile-web it is a full-screen list." />
 
       <Callout label="Autodoc reading">
-        This is neither global <b>Search</b> (which queries the whole catalogue and leaves the page) nor the faceted <b>Filters</b> (checkboxes and attributes). It is the in-list search for one item among a long, flat set — the app's List-Filtering screen. The web keeps it on a desktop right-side panel where there is room, and falls back to the app's full-screen list on mobile-web.
+        This is neither a global search that queries the whole catalogue and leaves the page, nor a faceted attribute filter (checkboxes and attributes). It is the in-list search for one item among a long, flat set. On desktop the web keeps it in a right-side panel where there is room; on mobile-web it falls back to a full-screen list.
       </Callout>
 
       <H3>Search field over a scrollable list</H3>
@@ -457,7 +457,7 @@ function PatListFilter() {
             </div>
           </Browser>
         </FrameCell>
-        <FrameCell caption="<b>Mobile-web.</b> The full-screen list — the app's form — with a back affordance, search field, and the highlighted matches.">
+        <FrameCell caption="<b>Mobile-web.</b> The full-screen list — with a back affordance, search field, and the highlighted matches.">
           <MobileWeb url="autodoc.ex/select" header={false} nav={false}>
             <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: "-apple-system, sans-serif", background: "#fff" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderBottom: "1px solid #ececec", flexShrink: 0 }}>
@@ -473,13 +473,13 @@ function PatListFilter() {
       <Rules items={[
         "<b>One large flat list.</b> Brands, categories, addresses, garage cars — a long set you pick one from, not a faceted attribute filter.",
         "<b>Search narrows live.</b> Rows filter as the user types, with the matched text highlighted and a count of how many remain.",
-        "<b>Side panel ↔ full screen.</b> Desktop keeps it in a panel beside the results; mobile-web gives it the whole screen, the app's form.",
+        "<b>Side panel ↔ full screen.</b> Desktop keeps it in a panel beside the results; mobile-web gives it the whole screen.",
         "<b>Picking commits.</b> Selecting a row applies the choice and returns; a no-match shows a small inline line, never a full empty screen.",
       ]}/>
 
       <DoDont
         doItem="Use it to pick one item from a long flat list, filtering live with the match highlighted; keep it a side panel on desktop and a full screen on mobile-web."
-        dontItem="Don't confuse it with global Search or the faceted Filters, and don't use it for short lists that need no search at all."
+        dontItem="Don't confuse it with a global search or a faceted attribute filter, and don't use it for short lists that need no search at all."
       />
 
     </Section>

@@ -189,46 +189,47 @@ window.PatDropdown = PatDropdown;
 function PatFilters() {
   return (
     <Section id="p-filters">
-      <PatternHead category="Not ready" title="Filters"
-        lede="The controls that narrow a result set. On desktop they live in an always-visible left sidebar; on mobile-web the same controls open as a bottom sheet behind a Filters button. Same region, same options — only the placement changes. Selections narrow the list live, and the active count is always visible." />
+      <PatternHead category="Controls" title="Filters"
+        lede="The controls that narrow a result set. On desktop they sit in a persistent left sidebar beside a toolbar — title, result count, sort and view — over the results. On mobile-web they collapse into a full-screen sheet opened from a filters icon; sort becomes its own icon, and the «fits my car» toggle lifts out under the title. Filter values are schematic placeholders here, as in the app." />
 
       <Callout label="Autodoc reading">
-        The app's list-filtering screen becomes, on the web, a persistent sidebar — there's room to keep the controls on screen rather than behind a button. On small screens the web falls back to the app's model: a sheet of the same controls. The set of options and their behaviour are identical across breakpoints; the desktop sidebar is just the part the phone has no room for.</Callout>
+        The app puts filtering in a full-screen corridor; the web keeps that on mobile as a <b>full-screen sheet</b> — it covers the shell, dismisses with back, and commits nothing until «Show results» applies and closes. On desktop the sidebar is persistent, no overlay. Fitment-aware sections carry a quiet «For your car» hint that is informational, not enforced — any value stays pickable. «Show results» is filled black; the orange accent stays reserved for buying.</Callout>
 
-      <H3>Sidebar ↔ sheet</H3>
-      <p>Desktop keeps filters in a left rail beside the results; mobile-web hides them behind a Filters button and raises them as a sheet over the dimmed list, with a clear &quot;Show N results&quot; commit.</p>
+      <H3>Desktop — sidebar · toolbar · results</H3>
+      <p>A persistent left sidebar holds the filter sections. Above the results a toolbar carries the category title and result count on the left, and sort + a small view selector on the right — both dropdowns, not icons. The «fits my car» toggle rides above the sidebar.</p>
       <FrameRow>
-        <FrameCell caption="<b>Desktop.</b> Filters in the persistent left sidebar beside the results.">
-          <Browser url="autodoc.ex/list">
+        <FrameCell caption="<b>Desktop.</b> Left: the filter sidebar with the «fits my car» toggle on top. Right: toolbar (title · results · sort · view) over the results area — product cards aren't shown here.">
+          <Browser url="autodoc.ex/catalog/brake-discs">
             <HeaderSpine />
-            <div style={{ padding: 12, display: "flex", gap: 12 }}>
-              <SidebarFilters w={150} />
-              <SchematicGrid cols={2} n={4} h={56} />
-            </div>
+            <CollectionsStrip />
+            <FiltersDesktop />
           </Browser>
         </FrameCell>
-        <FrameCell caption="<b>Mobile-web.</b> The same filters open as a sheet over the dimmed list.">
-          <MobileWeb url="autodoc.ex/list" nav={false}>
-            <div style={{ padding: 10 }}><SchematicGrid cols={2} n={4} h={54} /></div>
-            <MobileDrawer title="Filters">
-              <SidebarFilters headless />
-              <div style={{ marginTop: 10 }}><Btn tone="accent" block>Show 32 results</Btn></div>
-            </MobileDrawer>
+      </FrameRow>
+
+      <H3>Mobile — a full-screen filter sheet</H3>
+      <p>The catalog bar keeps the title, result count, a <b>sort icon</b> and a <b>filters icon</b>, with the green «fits my car» toggle lifted out under them. The filters icon opens a full-screen sheet — header (‹ · Filters · Clear all), the active-filter chips, the sections, and a sticky «Show results (N)». Tapping sort opens its own bottom sheet.</p>
+      <FrameRow>
+        <FrameCell caption="<b>Mobile-web — the catalog bar.</b> Title · results, a sort icon and a filters icon; the «fits my car» toggle sits under them.">
+          <MobileWeb url="autodoc.ex/catalog/brake-discs" navActive="Catalog">
+            <FiltersMobileBar />
+            <div style={{ padding: "0 12px" }}><Region label="Results area" sub="no cards shown" h={300} /></div>
+          </MobileWeb>
+        </FrameCell>
+        <FrameCell caption="<b>Mobile-web — the filter sheet.</b> Full-screen: header, active chips, sections (a «For your car» hint where it applies), and a sticky «Show results».">
+          <MobileWeb url="autodoc.ex/catalog/brake-discs" navActive="Catalog" overlay={<FilterSheet />}>
+            <div style={{ padding: 12 }}><Region label="Catalog behind" h={300} /></div>
           </MobileWeb>
         </FrameCell>
       </FrameRow>
 
       <Rules items={[
-        "<b>Sidebar on desktop, sheet on mobile.</b> Same controls, placement adapts to the breakpoint.",
-        "<b>Narrow live.</b> Selections update the result set and the count immediately.",
-        "<b>The mobile sheet commits</b> with a 'Show N results' button; desktop applies as you go.",
-        "<b>Always show the active count,</b> so the effect of the filters is never hidden.",
+        "<b>Desktop sidebar, mobile sheet.</b> A persistent left sidebar on desktop; a full-screen sheet on mobile-web that covers the shell, dismisses with back, and commits nothing until applied.",
+        "<b>Sort &amp; view are dropdowns on desktop.</b> Small selectors, never grid/list icons; on mobile sort becomes an icon that opens a bottom sheet.",
+        "<b>The «fits my car» toggle is a scope, not a filter section.</b> It rides above the sidebar on desktop and under the title on mobile.",
+        "<b>Fitment is a hint, not a lock.</b> A «For your car» chip marks the matching value; any value stays pickable.",
+        "<b>«Show results» is black, not orange.</b> Applying filters is navigation, not a buy — the accent stays reserved.",
       ]}/>
-
-      <DoDont
-        doItem="Keep filters visible in a desktop sidebar and one tap away in a mobile sheet, narrowing the list live and showing the result count."
-        dontItem="Don't bury filters where they can't be found on mobile, and don't apply them without showing how many results remain."
-      />
 
     </Section>
   );
